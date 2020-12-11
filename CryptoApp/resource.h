@@ -5,7 +5,7 @@
 #define IDM_ABOUTBOX                    0x0010
 #define IDP_OLE_INIT_FAILED             100
 #define IDS_ABOUTBOX                    101
-#define IDD_CryptoApp_DIALOG      102
+#define IDD_CryptoApp_DIALOG            102
 #define IDP_SOCKETS_INIT_FAILED         103
 #define IDR_MAINFRAME                   128
 #define IDR_TOOLBAR1                    130
@@ -18,7 +18,10 @@
 #define radio_encrypt                   1006
 #define radio_decrypt                   1007
 #define edit_control_output_hex_cstring 1008
+#define edit_control_iv_hex_cstring     1011
 #define edit_control_error_state_cstring 1012
+#define label_key                       1014
+#define button_gen_iv                   1015
 
 // Next default values for new objects
 // 
@@ -26,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1013
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

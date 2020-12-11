@@ -112,6 +112,7 @@ BEGIN_MESSAGE_MAP(CCryptoAppDlg, CDialogEx)
 	ON_BN_CLICKED(button_perform, &CCryptoAppDlg::OnBnClickedPerform)
 	ON_BN_CLICKED(button_gen_key, &CCryptoAppDlg::OnBnClickedGenkey)
 	ON_EN_CHANGE(edit_control_input_native_cstring, &CCryptoAppDlg::OnEnChange)
+	ON_BN_CLICKED(button_gen_iv, &CCryptoAppDlg::OnBnClickedGenIV)
 END_MESSAGE_MAP()
 
 
@@ -147,6 +148,9 @@ BOOL CCryptoAppDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	CenterWindow();
+
+	// make default encrypt mode
+	CDialogEx::CheckRadioButton(radio_encrypt, radio_decrypt, radio_encrypt);
 
 	ShowWindow(SW_NORMAL);
 
@@ -411,4 +415,23 @@ void CCryptoAppDlg::OnEnChange()
 
 	hex_input = CString(str_input.c_str());
 	CDialogEx::SetDlgItemTextW(edit_control_input_hex_cstring, hex_input);
+}
+
+
+void CCryptoAppDlg::OnBnClickedGenIV()
+{
+	// TODO: Add your control notification handler code here
+	CString output_key;
+	_DES_cblock _des_block;
+	memset(_des_block.des_block, 0, DES_KEY_SZ);
+
+	_des_block.des_ull = des_random_key();
+
+	std::stringstream stream;
+	stream << std::hex << _des_block.des_ull;
+	std::string result(stream.str());
+	StringUpper(result);
+
+	output_key = CString(result.c_str());
+	CDialogEx::SetDlgItemTextW(edit_control_iv_hex_cstring, output_key);
 }

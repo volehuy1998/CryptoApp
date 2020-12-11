@@ -47,4 +47,5 @@ public:
 	afx_msg void OnBnClickedPerform();
 	afx_msg void OnBnClickedGenkey();
 	afx_msg void OnEnChange();
+	afx_msg void OnBnClickedGenIV();
 };
