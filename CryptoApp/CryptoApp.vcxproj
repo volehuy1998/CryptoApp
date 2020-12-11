@@ -230,7 +230,7 @@
     <Image Include="res\toolbar1.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\NativeDesLibrary\NativeDesDLL\NativeDesDLL.vcxproj">
+    <ProjectReference Include="..\Native-Des-Lib\NativeDesDLL\NativeDesDLL.vcxproj">
       <Project>{9a1b94a4-f47d-435e-84cf-48210307cfdc}</Project>
     </ProjectReference>
   </ItemGroup>
