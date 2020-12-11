@@ -196,6 +196,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CryptoReady.h" />
     <ClInclude Include="DlgProxy.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="CryptoApp.h" />

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <string>
+
 class CCryptoAppDlgAutoProxy;
 
 
@@ -48,4 +50,18 @@ public:
 	afx_msg void OnBnClickedGenkey();
 	afx_msg void OnEnChange();
 	afx_msg void OnBnClickedGenIV();
+
+protected:
+	int get_key(int edit_control_id, unsigned long long* key, std::string& error_msg);
+	void PerformItem(int item, BOOL enable);
+public:
+	afx_msg void OnBnClickedaes128();
+	afx_msg void OnBnClickeddes();
+	afx_msg void OnBnClickedaes192();
+	afx_msg void OnBnClickedrc2();
+	afx_msg void OnBnClickedecb();
+	afx_msg void OnBnClickedncbc();
+	afx_msg void OnBnClickedofb();
+	afx_msg void OnBnClickedcfb();
+	afx_msg void OnBnClickedede();
 };
