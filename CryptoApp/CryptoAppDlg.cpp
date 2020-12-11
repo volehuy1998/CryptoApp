@@ -16,6 +16,7 @@
 
 #include "../Native-Des-Lib/NativeDesDLL/NativeDes.h"
 #include <sstream>
+#include <vector>
 #include "CryptoReady.h"
 
 void StringUpper(std::string& str)
