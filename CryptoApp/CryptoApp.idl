@@ -1,0 +1,29 @@
+// CryptoApp.idl : type library source for CryptoApp.exe
+
+// This file will be processed by the MIDL compiler to produce the
+// type library (CryptoApp.tlb).
+
+[ uuid(687f8da2-3a1c-4f1c-917d-6898c8986b86), version(1.0) ]
+library CryptoApp
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	//  Primary dispatch interface for CCryptoAppDoc
+
+	[ uuid(3ca5f104-8a37-4129-b3bf-e6dafae15d9b) ]
+	dispinterface ICryptoApp
+	{
+		properties:
+
+		methods:
+	};
+
+	//  Class information for CCryptoAppDoc
+
+	[ uuid(a2b91fb7-61ad-461f-abd4-a96efc421fbd) ]
+	coclass CryptoApp
+	{
+		[default] dispinterface ICryptoApp;
+	};
+};

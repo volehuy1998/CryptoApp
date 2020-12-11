@@ -1,0 +1,17 @@
+REGEDIT
+; This .REG file may be used by your SETUP program.
+;   If a SETUP program is not available, the entries below will be
+;   registered in your InitInstance automatically with a call to
+;   CWinApp::RegisterShellFileTypes and COleObjectFactory::UpdateRegistryAll.
+
+
+HKEY_CLASSES_ROOT\CryptoApp.Application = CryptoApp Application
+
+
+HKEY_CLASSES_ROOT\CryptoApp.Application\CLSID = {a2b91fb7-61ad-461f-abd4-a96efc421fbd}
+
+HKEY_CLASSES_ROOT\CLSID\{a2b91fb7-61ad-461f-abd4-a96efc421fbd} = CryptoApp Application
+HKEY_CLASSES_ROOT\CLSID\{a2b91fb7-61ad-461f-abd4-a96efc421fbd}\ProgId = CryptoApp.Application
+
+
+HKEY_CLASSES_ROOT\CLSID\{a2b91fb7-61ad-461f-abd4-a96efc421fbd}\LocalServer32 = CryptoApp.EXE
