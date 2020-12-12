@@ -23,18 +23,16 @@
 #define label_key                       1014
 #define button_gen_iv                   1015
 #define radio_des                       1020
-#define radio_aes_1                     1021
 #define radio_aes128                    1021
-#define radio_ecb                       1022
-#define radio_ncbc                      1023
-#define radio_ofb                       1024
-#define group_box_mode                  1025
-#define group_box_crypto                1026
+#define radio_aes192                    1022
+#define radio_rc2                       1023
+#define radio_ecb                       1024
+#define radio_ncbc                      1025
+#define radio_ofb                       1026
 #define radio_cfb                       1027
 #define radio_ede                       1028
-#define radio_aes192                    1032
-#define radio_rc2                       1033
-#define radio_rc4                       1034
+#define group_box_mode                  1029
+#define group_box_crypto                1030
 
 // Next default values for new objects
 // 

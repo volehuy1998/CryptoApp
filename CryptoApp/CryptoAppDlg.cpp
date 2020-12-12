@@ -326,6 +326,7 @@ void CCryptoAppDlg::OnBnClickedPerform()
 	int crypto_mode = 1;
 	int radio_crypto_category = CDialogEx::GetCheckedRadioButton(radio_des, radio_rc2);
 	int radio_crypto_mode = CDialogEx::GetCheckedRadioButton(radio_ecb, radio_ede);
+	int blocks = 0;
 
 	if (is_check_encrypt)
 	{
@@ -340,16 +341,47 @@ void CCryptoAppDlg::OnBnClickedPerform()
 		CDialogEx::GetDlgItemTextW(edit_control_output_hex_cstring, input_hex_cstring);
 	}
 
-	if (radio_crypto_category == radio_des)			crypto_category = 1;
-	else if (radio_crypto_category == radio_aes128) crypto_category = 2;
-	else if (radio_crypto_category == radio_aes192) crypto_category = 3;
-	else if (radio_crypto_category == radio_rc2)	crypto_category = 4;
+	if (radio_crypto_category == radio_des)
+	{
+		crypto_category = 1;
+		blocks = block_map[DES_IDX];
+	}
+	else if (radio_crypto_category == radio_aes128)
+	{
+		crypto_category = 2;
+		blocks = block_map[AES_128_IDX];
+	}
+	else if (radio_crypto_category == radio_aes192)
+	{
+		crypto_category = 3;
+		blocks = block_map[AES_192_IDX];
+	}
+	else if (radio_crypto_category == radio_rc2)
+	{
+		crypto_category = 4;
+		blocks = block_map[RC2_IDX];
+	}
 
-	if (radio_crypto_mode == radio_ecb)		  crypto_mode = 1;
-	else if (radio_crypto_mode == radio_ncbc) crypto_mode = 2;
-	else if (radio_crypto_mode == radio_ofb)  crypto_mode = 3;
-	else if (radio_crypto_mode == radio_cfb)  crypto_mode = 4;
-	else if (radio_crypto_mode == radio_ede)  crypto_mode = 5;
+	if (radio_crypto_mode == radio_ecb)
+	{
+		crypto_mode = 1;
+	}
+	else if (radio_crypto_mode == radio_ncbc)
+	{
+		crypto_mode = 2;
+	}
+	else if (radio_crypto_mode == radio_ofb)
+	{
+		crypto_mode = 3;
+	}
+	else if (radio_crypto_mode == radio_cfb)
+	{
+		crypto_mode = 4;
+	}
+	else if (radio_crypto_mode == radio_ede)
+	{
+		crypto_mode = 5;
+	}
 
 	CDialogEx::SetDlgItemTextW(edit_control_error_state_cstring, CString(std::string("").c_str()));
 
@@ -385,7 +417,7 @@ void CCryptoAppDlg::OnBnClickedPerform()
 		// init output native
 		input_native_len = input_native_string.length();
 
-		output_native_len = ((input_native_len / DES_KEY_SZ) + 1) * DES_KEY_SZ;
+		output_native_len = ((input_native_len / (DES_KEY_SZ * blocks)) + 1) * (DES_KEY_SZ * blocks);
 		output_native = (unsigned char*)calloc(output_native_len + 1, 1);
 
 		// perform
