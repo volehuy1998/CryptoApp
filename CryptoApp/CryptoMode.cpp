@@ -2,11 +2,6 @@
 #include "CryptoMode.h"
 #include "CryptoReady.h"
 
-EVP_CIPHER* get_des_crypto_mode(int mode)
-{
-    return nullptr;
-}
-
 EVP_CIPHER* get_aes_crypto_mode(int type_crypto_bit, int type_crypto_mode)
 {
 	EVP_CIPHER* cipher = NULL;

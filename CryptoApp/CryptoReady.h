@@ -9,7 +9,7 @@
 #define DES_READY	  1
 #define AES_128_READY 1
 #define AES_192_READY 1
-#define AES_256_READY 0
+#define AES_256_READY 1
 #define RC2_READY	  0
 
 #define DES_BLOCK	  1

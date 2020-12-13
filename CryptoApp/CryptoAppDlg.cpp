@@ -21,7 +21,7 @@
 #include "CryptoReady.h"
 #include "CryptoAES.h"
 
-int crypto_map[] = { DES_READY, AES_128_READY, AES_192_READY, RC2_READY };
+int crypto_map[] = { DES_READY, AES_128_READY, AES_192_READY, AES_256_READY, RC2_READY };
 int mode_map[] = { ECB_READY, CBC_READY, OFB_READY, CFB_READY, EDE_READY };
 int block_map[] = { DES_BLOCK, AES_128_BLOCK, AES_192_BLOCK, RC2_BLOCK };
 
@@ -179,6 +179,7 @@ BOOL CCryptoAppDlg::OnInitDialog()
 	radio_cryptos.push_back(CDialogEx::GetDlgItem(radio_des));
 	radio_cryptos.push_back(CDialogEx::GetDlgItem(radio_aes128));
 	radio_cryptos.push_back(CDialogEx::GetDlgItem(radio_aes192));
+	radio_cryptos.push_back(CDialogEx::GetDlgItem(radio_aes256));
 	radio_cryptos.push_back(CDialogEx::GetDlgItem(radio_rc2));
 
 	std::vector<CWnd*> radio_modes;
