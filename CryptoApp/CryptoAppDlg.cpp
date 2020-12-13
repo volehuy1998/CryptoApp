@@ -125,6 +125,7 @@ BEGIN_MESSAGE_MAP(CCryptoAppDlg, CDialogEx)
 	ON_BN_CLICKED(radio_aes128, &CCryptoAppDlg::OnBnClickedaes128)
 	ON_BN_CLICKED(radio_des, &CCryptoAppDlg::OnBnClickeddes)
 	ON_BN_CLICKED(radio_aes192, &CCryptoAppDlg::OnBnClickedaes192)
+	ON_BN_CLICKED(radio_aes256, &CCryptoAppDlg::OnBnClickedaes256)
 	ON_BN_CLICKED(radio_rc2, &CCryptoAppDlg::OnBnClickedrc2)
 	ON_BN_CLICKED(radio_ecb, &CCryptoAppDlg::OnBnClickedecb)
 	ON_BN_CLICKED(radio_ncbc, &CCryptoAppDlg::OnBnClickedncbc)
@@ -385,9 +386,17 @@ void CCryptoAppDlg::OnBnClickedPerform()
 		key = (unsigned char*)calloc(24, 1);
 		iv = (unsigned char*)calloc(24, 1);
 	}
-	else if (radio_crypto_category == radio_rc2)
+	else if (radio_crypto_category == radio_aes256)
 	{
 		crypto_category = 4;
+		blocks = block_map[AES_256_IDX];
+		type_crypto_bit = AES_256;
+		key = (unsigned char*)calloc(32, 1);
+		iv = (unsigned char*)calloc(32, 1);
+	}
+	else if (radio_crypto_category == radio_rc2)
+	{
+		crypto_category = 5;
 		blocks = block_map[RC2_IDX];
 	}
 
@@ -453,7 +462,7 @@ void CCryptoAppDlg::OnBnClickedPerform()
 			// perform
 			perform_des((unsigned char*)input_native_string.c_str(), input_native_len, key, iv, output_native, &output_performed_len, is_check_encrypt, crypto_category, crypto_mode, &error);
 		}
-		else if (crypto_category == 2 || crypto_category == 3)
+		else if (crypto_category == 2 || crypto_category == 3 || crypto_category == 4)
 		{
 			// aes
 			perform_aes((unsigned char*)input_native_string.c_str(), input_native_len, output_native, &output_performed_len, key, iv, type_crypto_bit, type_crypto_mode, is_check_encrypt, &error);
@@ -581,6 +590,8 @@ void CCryptoAppDlg::put_key_or_iv(int edit_control_id)
 		blocks = 2;
 	else if (this->check_crypto_category(radio_aes192))
 		blocks = 3;
+	else if (this->check_crypto_category(radio_aes256))
+		blocks = 4;
 
 	total_byte = blocks * 8;
 	key = (unsigned char*)calloc(total_byte, 1);
@@ -610,6 +621,15 @@ void CCryptoAppDlg::OnBnClickedaes192()
 	// TODO: Add your control notification handler code here
 	this->enable_item(radio_ede, FALSE);
 }
+
+
+
+void CCryptoAppDlg::OnBnClickedaes256()
+{
+	// TODO: Add your control notification handler code here
+	this->enable_item(radio_ede, FALSE);
+}
+
 
 
 void CCryptoAppDlg::OnBnClickedrc2()

@@ -45,6 +45,23 @@ EVP_CIPHER* get_aes_crypto_mode(int type_crypto_bit, int type_crypto_mode)
 			cipher = (EVP_CIPHER*)EVP_aes_192_cfb();
 		}
 	}
+	else if (type_crypto_bit == AES_256)
+	{
+		switch (type_crypto_mode)
+		{
+		case ECB_MODE:
+			cipher = (EVP_CIPHER*)EVP_aes_256_ecb();
+			break;
+		case CBC_MODE:
+			cipher = (EVP_CIPHER*)EVP_aes_256_cbc();
+			break;
+		case OFB_MODE:
+			cipher = (EVP_CIPHER*)EVP_aes_256_ofb();
+			break;
+		case CFB_MODE:
+			cipher = (EVP_CIPHER*)EVP_aes_256_cfb();
+		}
+	}
 
 	return cipher;
 }

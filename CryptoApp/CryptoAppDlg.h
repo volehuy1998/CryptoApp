@@ -57,9 +57,10 @@ protected:
 	bool check_crypto_category(int item_id);
 	void put_key_or_iv(int edit_control_id);
 public:
-	afx_msg void OnBnClickedaes128();
 	afx_msg void OnBnClickeddes();
+	afx_msg void OnBnClickedaes128();
 	afx_msg void OnBnClickedaes192();
+	afx_msg void OnBnClickedaes256();
 	afx_msg void OnBnClickedrc2();
 	afx_msg void OnBnClickedecb();
 	afx_msg void OnBnClickedncbc();
