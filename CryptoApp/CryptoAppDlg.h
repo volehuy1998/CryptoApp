@@ -52,8 +52,10 @@ public:
 	afx_msg void OnBnClickedGenIV();
 
 protected:
-	int get_key(int edit_control_id, unsigned long long* key, std::string& error_msg);
-	void PerformItem(int item, BOOL enable);
+	unsigned char* set_key(int edit_control_id);
+	void enable_item(int item, BOOL enable);
+	bool check_crypto_category(int item_id);
+	void put_key_or_iv(int edit_control_id);
 public:
 	afx_msg void OnBnClickedaes128();
 	afx_msg void OnBnClickeddes();

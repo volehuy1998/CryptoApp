@@ -196,6 +196,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CryptoAES.h" />
+    <ClInclude Include="CryptoMode.h" />
     <ClInclude Include="CryptoReady.h" />
     <ClInclude Include="DlgProxy.h" />
     <ClInclude Include="framework.h" />
@@ -206,6 +208,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CryptoAES.cpp" />
+    <ClCompile Include="CryptoMode.cpp" />
     <ClCompile Include="DlgProxy.cpp" />
     <ClCompile Include="CryptoApp.cpp" />
     <ClCompile Include="CryptoAppDlg.cpp" />

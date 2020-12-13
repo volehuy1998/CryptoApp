@@ -17,7 +17,13 @@
 #include "../Native-Des-Lib/NativeDesDLL/NativeDes.h"
 #include <sstream>
 #include <vector>
+#include <openssl/rand.h>
 #include "CryptoReady.h"
+#include "CryptoAES.h"
+
+int crypto_map[] = { DES_READY, AES_128_READY, AES_192_READY, RC2_READY };
+int mode_map[] = { ECB_READY, CBC_READY, OFB_READY, CFB_READY, EDE_READY };
+int block_map[] = { DES_BLOCK, AES_128_BLOCK, AES_192_BLOCK, RC2_BLOCK };
 
 void StringUpper(std::string& str)
 {
@@ -285,6 +291,14 @@ BOOL CCryptoAppDlg::CanExit()
 	return TRUE;
 }
 
+unsigned char* ConvertCString2Pointer(CString cstring)
+{
+	CT2CA pszConvertedAnsiString(cstring);
+	std::string str_input(pszConvertedAnsiString);
+
+	return (unsigned char*)calloc(str_input.length(), 1);
+}
+
 std::string ConvertCString2String(CString cstring)
 {
 	CT2CA pszConvertedAnsiString(cstring);
@@ -328,6 +342,13 @@ void CCryptoAppDlg::OnBnClickedPerform()
 	int radio_crypto_mode = CDialogEx::GetCheckedRadioButton(radio_ecb, radio_ede);
 	int blocks = 0;
 
+	int type_crypto_bit = 0;
+	int type_crypto_mode = 0;
+	unsigned char* key = NULL;
+	unsigned char* iv = NULL;
+	CString key_cstring;
+	CString iv_cstring;
+
 	if (is_check_encrypt)
 	{
 		// encrypt
@@ -345,16 +366,24 @@ void CCryptoAppDlg::OnBnClickedPerform()
 	{
 		crypto_category = 1;
 		blocks = block_map[DES_IDX];
+		key = (unsigned char*)calloc(8, 1);
+		iv = (unsigned char*)calloc(8, 1);
 	}
 	else if (radio_crypto_category == radio_aes128)
 	{
 		crypto_category = 2;
 		blocks = block_map[AES_128_IDX];
+		type_crypto_bit = AES_128;
+		key = (unsigned char*)calloc(16, 1);
+		iv = (unsigned char*)calloc(16, 1);
 	}
 	else if (radio_crypto_category == radio_aes192)
 	{
 		crypto_category = 3;
 		blocks = block_map[AES_192_IDX];
+		type_crypto_bit = AES_192;
+		key = (unsigned char*)calloc(24, 1);
+		iv = (unsigned char*)calloc(24, 1);
 	}
 	else if (radio_crypto_category == radio_rc2)
 	{
@@ -365,22 +394,27 @@ void CCryptoAppDlg::OnBnClickedPerform()
 	if (radio_crypto_mode == radio_ecb)
 	{
 		crypto_mode = 1;
+		type_crypto_mode = ECB_MODE;
 	}
 	else if (radio_crypto_mode == radio_ncbc)
 	{
 		crypto_mode = 2;
+		type_crypto_mode = CBC_MODE;
 	}
 	else if (radio_crypto_mode == radio_ofb)
 	{
 		crypto_mode = 3;
+		type_crypto_mode = OFB_MODE;
 	}
 	else if (radio_crypto_mode == radio_cfb)
 	{
 		crypto_mode = 4;
+		type_crypto_mode = CFB_MODE;
 	}
 	else if (radio_crypto_mode == radio_ede)
 	{
 		crypto_mode = 5;
+		type_crypto_mode = EDE_MODE;
 	}
 
 	CDialogEx::SetDlgItemTextW(edit_control_error_state_cstring, CString(std::string("").c_str()));
@@ -389,23 +423,15 @@ void CCryptoAppDlg::OnBnClickedPerform()
 	{
 		// get key cstring
 		// convert key cstring to key ull
-		error_key = get_key(edit_control_key_hex_cstring, &input_key_ull, error_msg);
-		if (error_key != 0)
-		{
-			break;
-		}
+		key = set_key(edit_control_key_hex_cstring);
 
-		if (crypto_mode != 1)
+		if (type_crypto_mode != ECB_MODE)
 		{
 			// ecb mode no need iv
 
 			// get key cstring
 			// convert key cstring to key ull
-			error_key = get_key(edit_control_iv_hex_cstring, &input_iv_ull, error_msg);
-			if (error_key != 0)
-			{
-				break;
-			}
+			iv = set_key(edit_control_iv_hex_cstring);
 		}
 
 		// convert hex cstring to hex string
@@ -420,8 +446,18 @@ void CCryptoAppDlg::OnBnClickedPerform()
 		output_native_len = ((input_native_len / (DES_KEY_SZ * blocks)) + 1) * (DES_KEY_SZ * blocks);
 		output_native = (unsigned char*)calloc(output_native_len + 1, 1);
 
-		// perform
-		perform((unsigned char*)input_native_string.c_str(), input_native_len, input_key_ull, input_iv_ull, output_native, &output_performed_len, is_check_encrypt, crypto_category, crypto_mode, &error);
+		if (crypto_category == 1)
+		{
+			// des
+
+			// perform
+			perform_des((unsigned char*)input_native_string.c_str(), input_native_len, key, iv, output_native, &output_performed_len, is_check_encrypt, crypto_category, crypto_mode, &error);
+		}
+		else if (crypto_category == 2 || crypto_category == 3)
+		{
+			// aes
+			perform_aes((unsigned char*)input_native_string.c_str(), input_native_len, output_native, &output_performed_len, key, iv, type_crypto_bit, type_crypto_mode, is_check_encrypt, &error);
+		}
 
 		if (error != 1)
 		{
@@ -471,6 +507,9 @@ void CCryptoAppDlg::OnBnClickedPerform()
 		free(output_native);
 	}
 
+	free(key);
+	free(iv);
+
 	CString error_msg_cstring = CString(error_msg.c_str());
 	CDialogEx::SetDlgItemTextW(edit_control_error_state_cstring, error_msg_cstring);
 }
@@ -478,20 +517,7 @@ void CCryptoAppDlg::OnBnClickedPerform()
 
 void CCryptoAppDlg::OnBnClickedGenkey()
 {
-	// TODO: Add your control notification handler code here
-	CString output_key;
-	_DES_cblock _des_block;
-	memset(_des_block.des_block, 0, DES_KEY_SZ);
-
-	_des_block.des_ull = des_random_key();
-
-	std::stringstream stream;
-	stream << std::hex << _des_block.des_ull;
-	std::string result(stream.str());
-	StringUpper(result);
-
-	output_key = CString(result.c_str());
-	CDialogEx::SetDlgItemTextW(edit_control_key_hex_cstring, output_key);
+	this->put_key_or_iv(edit_control_key_hex_cstring);
 }
 
 void CCryptoAppDlg::OnEnChange()
@@ -517,111 +543,112 @@ void CCryptoAppDlg::OnEnChange()
 
 void CCryptoAppDlg::OnBnClickedGenIV()
 {
-	// TODO: Add your control notification handler code here
-	CString output_key;
-	_DES_cblock _des_block;
-	memset(_des_block.des_block, 0, DES_KEY_SZ);
-
-	_des_block.des_ull = des_random_key();
-
-	std::stringstream stream;
-	stream << std::hex << _des_block.des_ull;
-	std::string result(stream.str());
-	StringUpper(result);
-
-	output_key = CString(result.c_str());
-	CDialogEx::SetDlgItemTextW(edit_control_iv_hex_cstring, output_key);
+	this->put_key_or_iv(edit_control_iv_hex_cstring);
 }
 
-int CCryptoAppDlg::get_key(int edit_control_id, unsigned long long* input_key_ull, std::string& error_msg)
+unsigned char* CCryptoAppDlg::set_key(int edit_control_id)
 {
-	int ret = -1;
 	CString input_key_cstring;
-
-	// get key cstring
-	//CDialogEx::GetDlgItemTextW(edit_control_id, input_key_cstring);
 	CDialogEx::GetDlgItemTextW(edit_control_id, input_key_cstring);
-
-	// convert key cstring to key ull
-	*input_key_ull = ConvertKeyCStringToULL(input_key_cstring);
-
-	ret = des_check_key(*input_key_ull);
-	if (ret == -2)
-	{
-		error_msg = "Key weak";
-	}
-	else if (ret == -1)
-	{
-		error_msg = "Key check parity bit failed";
-	}
-
-	return ret;
+	CT2CA pszConvertedAnsiString(input_key_cstring);
+	std::string str_input(pszConvertedAnsiString);
+	unsigned char* buff = (unsigned char*)calloc(str_input.length(), 1);
+	memcpy_s(buff, str_input.length(), str_input.c_str(), str_input.length());
+	return buff;
 }
 
-void CCryptoAppDlg::PerformItem(int item, BOOL enable)
+void CCryptoAppDlg::enable_item(int item, BOOL enable)
 {
 	CWnd* pbutton_gen_iv = CDialogEx::GetDlgItem(item);
 	pbutton_gen_iv->EnableWindow(enable);
 }
 
+bool CCryptoAppDlg::check_crypto_category(int item_id)
+{
+	return CDialogEx::GetCheckedRadioButton(radio_des, radio_rc2) == item_id;
+}
+
+void CCryptoAppDlg::put_key_or_iv(int edit_control_id)
+{
+	int blocks = 0;
+	int total_byte = 0;
+	unsigned char* key = NULL;
+	CString output_key_cstring;
+
+	if (this->check_crypto_category(radio_des))
+		blocks = 1;
+	else if (this->check_crypto_category(radio_aes128))
+		blocks = 2;
+	else if (this->check_crypto_category(radio_aes192))
+		blocks = 3;
+
+	total_byte = blocks * 8;
+	key = (unsigned char*)calloc(total_byte, 1);
+	RAND_bytes(key, total_byte);
+	std::string result = string_to_hex(std::string((const char*)key, total_byte));
+	output_key_cstring = CString(result.c_str());
+	CDialogEx::SetDlgItemTextW(edit_control_id, output_key_cstring);
+	free(key);
+}
+
 void CCryptoAppDlg::OnBnClickedaes128()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(radio_ede, FALSE);
+	this->enable_item(radio_ede, FALSE);
 }
 
 
 void CCryptoAppDlg::OnBnClickeddes()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(radio_ede, TRUE);
+	this->enable_item(radio_ede, TRUE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedaes192()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(radio_ede, FALSE);
+	this->enable_item(radio_ede, FALSE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedrc2()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(radio_ede, FALSE);
+	this->enable_item(radio_ede, FALSE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedecb()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(button_gen_iv, FALSE);
+	this->enable_item(button_gen_iv, FALSE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedncbc()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(button_gen_iv, TRUE);
+	this->enable_item(button_gen_iv, TRUE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedofb()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(button_gen_iv, TRUE);
+	this->enable_item(button_gen_iv, TRUE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedcfb()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(button_gen_iv, TRUE);
+	this->enable_item(button_gen_iv, TRUE);
 }
 
 
 void CCryptoAppDlg::OnBnClickedede()
 {
 	// TODO: Add your control notification handler code here
-	this->PerformItem(button_gen_iv, TRUE);
+	this->enable_item(button_gen_iv, TRUE);
 }

@@ -39,6 +39,12 @@
     <ClInclude Include="CryptoReady.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CryptoAES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CryptoMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgProxy.cpp">
@@ -51,6 +57,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CryptoAppDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CryptoMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CryptoAES.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
